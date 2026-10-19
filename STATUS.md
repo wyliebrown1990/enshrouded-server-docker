@@ -45,6 +45,8 @@ own `sh -c` command line. Use `docker logs enshrouded` instead. A real check loo
 - **Done 2026-10-19:** 192.168.1.158 is reserved as a Static DHCP lease for `beans`
   (Advanced → IPv4 Address Distribution → DHCP Leases). The router admin session expires after a
   while; the user has to log in again (password is on the router sticker).
+- Optional TODO: dynamic DNS name (DuckDNS/No-IP) so friends keep working if the public IP
+  changes. The user has to create the account; then set up an updater on this PC.
 - The in-game Join screen connects by IPv4 address or domain only; you can't search by server
   name. LAN players use `192.168.1.158`, outside players use the public IP (port 15637). The
   public IP is dynamic (Fios WAN uses DHCP), so consider a dynamic DNS name.
@@ -82,6 +84,23 @@ before trying.
   addresses within about a minute. A2S can time out for the first ~30s after `Host_Online`, so
   wait before treating that as a failure. Docker only runs after a Windows sign-in, so a Windows
   Update reboot keeps the server down until someone signs in.
+- **Monitor won't wake (OPEN, test pending):** Alienware AW3423DWF (QD-OLED) on DisplayPort,
+  NVIDIA RTX 4070 SUPER. After the 30-min display timeout, the screen stays black on mouse or
+  keyboard input. The PC does NOT sleep: no Kernel-Power sleep events, and the server stays up.
+  The user wants the display timeout kept (OLED burn-in), so "never turn off display" is not a fix.
+  - 2026-10-19: monitor firmware updated to M3B107 (Dell driver 892HJ, SHA-256 verified,
+    Dell-signed). The user ran the updater and it succeeded. The release notes don't mention wake
+    fixes.
+  - NEXT: wake test. Run `powercfg /change monitor-timeout-ac 1`, wait for standby, wake with
+    mouse/keyboard, then restore with `powercfg /change monitor-timeout-ac 30`. Display timeout
+    was 30 min (0x708) after the update; check that it was restored.
+  - If it still doesn't wake: wait ~2 min (OLED pixel refresh), then try Win+Ctrl+Shift+B, then
+    the monitor's power button. Note which one works. Next ideas: try HDMI or a different DP cable.
+  - This session has no desktop-control tool; the user clicks through GUI installers themselves.
+    In Git Bash, `powercfg /...` args get mangled (use MSYS_NO_PATHCONV=1), and the `!` prefix
+    only works in the Claude Code prompt, not in the user's own PowerShell window.
+- Two Chrome browsers are connected to Claude in Chrome: pick "Browser 2" (Windows, this PC).
+  The MacBook can't reach the router admin.
 - The Docker VM has about 16 GB RAM and 16 CPUs (host has 32 GB). That's enough.
 - In Git Bash, `docker exec ... /home/...` paths get mangled. Prefix with `MSYS_NO_PATHCONV=1`.
 
