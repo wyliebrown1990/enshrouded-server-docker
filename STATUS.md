@@ -33,17 +33,21 @@ The healthcheck (`pgrep -f "enshrouded_server"`) always reports healthy, because
 own `sh -c` command line. Use `docker logs enshrouded` instead. A real check looks for
 `[Session] finished transition ... 'Host_Online'`.
 
-## Networking: OPEN ITEM
+## Networking
 
-- LAN IP of host: `192.168.1.158`. Router: Verizon Fios, admin at `http://192.168.1.1`.
+- LAN IP of host: `192.168.1.158` (router hostname `beans`).
+  Router: Verizon Fios, admin at `http://192.168.1.1`.
   Credentials are on the router sticker, or use the My Fios app.
 - Steam master list has the server registered at the public IP on 15637.
-- A2S query works on `127.0.0.1` and `192.168.1.158`, but **times out on the public IP**, so the
-  server does not show in the in-game browser.
-- **TODO:** add a router port forward: UDP 15637 → 192.168.1.158:15637, and reserve that IP in DHCP.
-  Then verify with the A2S check below. If it still fails from inside the LAN, the router may not
-  support NAT loopback; test from outside.
-- The in-game browser searches by server name, not IP.
+- **Done 2026-10-19:** router port forward UDP Any -> 15637 to 192.168.1.158 (Firewall → Port
+  Forwarding, Custom Ports). A2S now answers on `127.0.0.1`, `192.168.1.158` and the public IP
+ , so the router does NAT loopback.
+- **TODO:** the DHCP lease for 192.168.1.158 is still Dynamic. If it changes, the forward breaks.
+  To reserve it: Advanced → IPv4 Address Distribution → DHCP Leases → `beans` → Edit (static
+  lease). Not done yet; waiting on the user.
+- The in-game Join screen connects by IPv4 address or domain only; you can't search by server
+  name. LAN players use `192.168.1.158`, outside players use the public IP (port 15637). The
+  public IP is dynamic (Fios WAN uses DHCP), so consider a dynamic DNS name.
 
 ```bash
 # Is the server registered with Steam? (replace with current public IP: curl -s https://api.ipify.org)
@@ -72,6 +76,12 @@ before trying.
 - Docker Desktop keeps popping up "WSL integration with distro 'Ubuntu' unexpectedly stopped".
   This is harmless to the server. Fix: Docker Desktop → Settings → Resources → WSL integration →
   turn off Ubuntu (if the user doesn't use `docker` inside Ubuntu).
+- Staying up: sleep on AC is set to Never, and Docker Desktop's "Start when you sign in" is on
+  (`AutoStart` in `%APPDATA%\Docker\settings-store.json`); both done 2026-10-19. Tested with
+  `docker desktop restart`: the container came back by itself and A2S answered on all three
+  addresses within about a minute. A2S can time out for the first ~30s after `Host_Online`, so
+  wait before treating that as a failure. Docker only runs after a Windows sign-in, so a Windows
+  Update reboot keeps the server down until someone signs in.
 - The Docker VM has about 16 GB RAM and 16 CPUs (host has 32 GB). That's enough.
 - In Git Bash, `docker exec ... /home/...` paths get mangled. Prefix with `MSYS_NO_PATHCONV=1`.
 
