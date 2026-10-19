@@ -1,0 +1,9 @@
+# Local override: keep server files on a Docker named volume instead of a
+# Windows bind mount (9p), which Proton crashes on under Docker Desktop.
+services:
+  enshrouded:
+    volumes:
+      - enshrouded-data:/home/steam/enshrouded
+
+volumes:
+  enshrouded-data:

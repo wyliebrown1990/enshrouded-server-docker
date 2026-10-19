@@ -1,3 +1,4 @@
 server-files/
 server-data/
 .vscode
+.env
