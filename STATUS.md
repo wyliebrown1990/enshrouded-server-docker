@@ -91,11 +91,11 @@ before trying.
   - 2026-10-19: monitor firmware updated to M3B107 (Dell driver 892HJ, SHA-256 verified,
     Dell-signed). The user ran the updater and it succeeded. The release notes don't mention wake
     fixes.
-  - NEXT: wake test. Run `powercfg /change monitor-timeout-ac 1`, wait for standby, wake with
-    mouse/keyboard, then restore with `powercfg /change monitor-timeout-ac 30`. Display timeout
-    was 30 min (0x708) after the update; check that it was restored.
-  - If it still doesn't wake: wait ~2 min (OLED pixel refresh), then try Win+Ctrl+Shift+B, then
-    the monitor's power button. Note which one works. Next ideas: try HDMI or a different DP cable.
+  - Wake test after the update: **Win+Ctrl+Shift+B** (resets the graphics driver) woke the screen.
+    So the monitor is losing the DisplayPort signal; the PC is fine. Display timeout is back to
+    30 min (confirmed 0x708). This is the workaround for now.
+  - Possible permanent fixes, not tried yet: confirm whether plain mouse/keyboard input ever
+    wakes it now, update the NVIDIA driver, try HDMI or a different DP cable.
   - This session has no desktop-control tool; the user clicks through GUI installers themselves.
     In Git Bash, `powercfg /...` args get mangled (use MSYS_NO_PATHCONV=1), and the `!` prefix
     only works in the Claude Code prompt, not in the user's own PowerShell window.
