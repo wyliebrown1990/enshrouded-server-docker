@@ -42,9 +42,9 @@ own `sh -c` command line. Use `docker logs enshrouded` instead. A real check loo
 - **Done 2026-10-19:** router port forward UDP Any -> 15637 to 192.168.1.158 (Firewall → Port
   Forwarding, Custom Ports). A2S now answers on `127.0.0.1`, `192.168.1.158` and the public IP
  , so the router does NAT loopback.
-- **TODO:** the DHCP lease for 192.168.1.158 is still Dynamic. If it changes, the forward breaks.
-  To reserve it: Advanced → IPv4 Address Distribution → DHCP Leases → `beans` → Edit (static
-  lease). Not done yet; waiting on the user.
+- **Done 2026-10-19:** 192.168.1.158 is reserved as a Static DHCP lease for `beans`
+  (Advanced → IPv4 Address Distribution → DHCP Leases). The router admin session expires after a
+  while; the user has to log in again (password is on the router sticker).
 - The in-game Join screen connects by IPv4 address or domain only; you can't search by server
   name. LAN players use `192.168.1.158`, outside players use the public IP (port 15637). The
   public IP is dynamic (Fios WAN uses DHCP), so consider a dynamic DNS name.
