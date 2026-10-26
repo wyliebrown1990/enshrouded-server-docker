@@ -1,6 +1,30 @@
 # Session status notes
 
-Handoff notes for the next agent working on this fork. Last updated 2026-10-19.
+Handoff notes for the next agent working on this fork. Last updated 2026-10-26.
+
+## Current state: PARKED (installed, stopped, won't auto-start)
+
+The user doesn't need the server yet. As of 2026-10-26:
+
+- The container `enshrouded` exists but is **stopped** with `docker compose stop`. Its restart policy is
+  `unless-stopped`, so a manual stop sticks: it does **not** come back when Docker Desktop or the PC
+  restarts. Verified with `docker desktop restart` (the container stayed `exited`).
+- World and game files are ready in the named volume. Before parking, the server reached `Host_Online`
+  with the restored `world0.ksd` (last saved 2026-10-24) and answered A2S on 127.0.0.1, 192.168.1.158
+  and the public IP.
+- **To bring it back into service:** run `docker compose up -d` from the repo root. From then on it
+  starts whenever the PC boots and someone signs in (Docker Desktop "Start when you sign in" is on, and
+  `unless-stopped` restarts a running container), until someone stops it again.
+  Check with `docker compose logs -f` for `Host_Online`.
+- **To park it again:** `docker compose stop`. (`docker compose down` also works but removes the container.)
+- Docker Desktop's sign-in autostart is on and should stay on. It doesn't start the parked server; it's
+  what makes the server come back after reboots once it's running.
+
+History: on 2026-10-26 the deployment was torn down for a planned move to a Mac mini (Late 2014,
+dual-core i5-4278U). That was dropped because the CPU is far below Enshrouded's requirements, even under
+native Linux. The server was restored on this PC from a backup in `C:\Users\wylie\enshrouded-migration\`
+(world tarball + `env.backup`, which contains the password). That folder can be deleted once a fresh
+backup exists.
 
 ## Repo
 
@@ -11,15 +35,14 @@ Handoff notes for the next agent working on this fork. Last updated 2026-10-19.
 
 ## Deployment (Windows 11 host, Docker Desktop + WSL2)
 
-- Running via `docker compose up -d` from the repo root. Container: `enshrouded`, image
+- Started via `docker compose up -d` from the repo root (currently parked, see above). Container: `enshrouded`, image
   `indifferentbroccoli/enshrouded-server-docker:latest` (engine: Proton GE).
 - Server name: **Wylie Enshrouded Server**, UDP **15637**, max 12 players.
 - Password protected: `SERVER_PASSWORD` is set in `.env` (gitignored; never commit it).
   It ends up on the `Default` user group in `enshrouded_server.json`.
 - Game files and saves live in the Docker named volume `enshrouded-server-docker_enshrouded-data`,
   set by `docker-compose.override.yml` (auto-loaded by compose).
-- The old `server-files\` folder (~7.6 GB) is an abandoned bind-mount copy and is unused.
-  The user hasn't decided yet whether to delete it.
+- The old `server-files\` bind-mount folder was deleted on 2026-10-26.
 
 ### Why the override exists
 
